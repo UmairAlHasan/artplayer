@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Player</title> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="js/artplayer.js"></script>
+    <script src="js/artplayer-plugin-chromecast.js"></script>
+    <script src="js/artplayer-plugin-chapter.js"></script>
+    <script src="js/artplayer-plugin-ads.js"></script>
+    <link rel="stylesheet" href="css/art.css">
+    <style>
+        .artplayer-app {
+            aspect-ratio: 16/9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="artplayer-app"></div>
+
+<script>
+const src = "https://pub-c4c3435960fc48e0a4cf94c9e861d76f.r2.dev/SOLO%20LEVELING%20S2E2.mp4";
+const sub = "https://edgedeliverynetwork.com/sub/ops-1957374093.vtt?t=1735578112&ext=.vtt";
+const poster ="src/demo.jpg"
+
+const settings = {
+            autoSkipIntro: true,
+            autoSkipOutro: true
+};
+const art = new Artplayer({
+    container: '.artplayer-app',
+    url: src,
+    poster: poster,
+    lock: true,
+    volume: 1.0,
+    isLive: false,
+    muted: false,
+    autoplay: false,
+    pip: false,
+    autoSize: true,
+    autoMini: true,
+    screenshot: false,
+    setting: true,
+    loop: true,
+    flip: false,
+    playbackRate: true,
+    aspectRatio: true,
+    fullscreen: true,
+    fullscreenWeb: false,
+    subtitleOffset: false,
+    miniProgressBar: true,
+    mutex: true,
+    backdrop: true,
+    playsInline: true,
+    autoPlayback: true,
+    airplay: true,
+    autoOrientation: true,
+    theme: '#129444',
+    lang: navigator.language.toLowerCase(),
+    moreVideoAttr: {},
+    subtitle: {
+        url: sub,
+        style: {
+            color: '#fff',
+            fontSize: '12px',
+        },
+    },
+    settings: [
+        {
+            html: 'Subtitle',
+            tooltip: 'English',
+            icon: '<img width="20" height="20" src="icons/subtitle.svg">',
+            selector: [
+                {
+                    html: 'Display',
+                    tooltip: 'Show',
+                    switch: true,
+                    onSwitch: function (item) {
+                        item.tooltip = item.switch ? 'Hide' : 'Show';
+                        art.subtitle.show = !item.switch;
+                        return !item.switch;
+                    },
+                },
+                {
+                    html: 'English',
+                    url: sub,
+                    default: true,
+                    click: function() {
+                        art.subtitle.url = sub;
+                    }
+                }
+            ],
+            onSelect: function(item) {
+                art.subtitle.url = item.url;
+                return item.html;
+            },
+        },
+        {
+            html: 'Sub Size',
+            tooltip: 'Medium',
+            icon: '<img width="16" height="16" src="icons/text.svg">',
+            selector: [
+                { html: 'Small', value: '10px' },
+                { html: 'Medium', value: '12px', default: true },
+                { html: 'Large', value: '16px' }
+            ],
+            onSelect: function (item) {
+                art.subtitle.style({ fontSize: item.value });
+                return item.html;
+            },
+        },
+{
+                    html: 'Auto Skip',
+                    tooltip: localStorage.getItem('autoSkipEnabled') === 'true' ? '' : '',
+                    icon: '<img width="16" height="16" src="icons/skip.svg">',
+                    switch: true,
+                    default: true,
+                    onSwitch: function(item) {
+                        const isEnabled = !settings.autoSkipIntro;
+                        settings.autoSkipIntro = isEnabled;
+                        settings.autoSkipOutro = isEnabled;
+                        item.tooltip = isEnabled ? '' : '';
+                        localStorage.setItem('autoSkipEnabled', isEnabled);
+                        return isEnabled;
+                    },
+                }    
+    ],
+    contextmenu: [
+        {
+            html: 'UrduCloud',
+            click: function (contextmenu) {
+                window.open('https://');
+                console.info('You clicked on the custom menu');
+                contextmenu.show = true;
+            },
+        },
+    ],
+    layers: [
+        {
+            html: '<img width="24" height="24" src="icons/logo.svg">',
+            click: function () {
+                window.open('/');
+                console.info('You clicked on the custom layer');
+            },
+            style: {
+                position: 'absolute',
+                top: '20px',
+                left: '20px',
+                opacity: '.9',
+            },
+        },
+    ],
+    plugins: [
+        artplayerPluginAds({
+            html: '<img src="src/demo1.jpg">',
+            video: 'src/demo1.mp4',
+            url: '/',
+            playDuration: 0,
+            totalDuration: 60,
+            i18n: {
+                close: 'Skip',
+                countdown: '%s',
+                detail: 'Click here',
+                canBeClosed: 'Skip ad in %s',
+            },
+        }),
+        artplayerPluginChapter({
+            chapters: [
+                { start: 40, end: 180, title: 'Intro' },
+                { start: 1337, end: 1400, title: 'Outro' },
+            ]
+        }),
+        //artplayerPluginChromecast({
+           // sdk: '//urducloud.org',
+           // mimeType: 'mp4',
+        //}),
+    ],
+    icons: {
+        loading: '<img width="80" height="80" src="icons/loading.svg">',
+        state: '<img width="50" height="50" src="icons/state.svg">',
+        indicator: '<img width="16" height="16" src="icons/indicator.svg">',
+        pip: `<img width="20" height="20" src="icons/pip.svg">`,
+        play: `<img width="20" height="20" src="icons/play.svg">`,
+        pause: `<img width="20" height="20" src="icons/pause.svg">`,
+        playbackRate: `<img width="16" height="16" src="icons/playback.png">`,
+        aspectRatio: `<img width="20" height="20" src="icons/quality.png">`,
+        config: `<img src="icons/config.svg">`,
+        fullscreenOn: '<img width="20" height="20" src="icons/fullscreen-on.svg">',
+        fullscreenOff: '<img width="20" height="20" src="icons/fullscreen-off.svg">',
+        volume: '<img src="icons/volume.svg">',
+        volumeClose: '<img src="icons/vl-close.svg">',
+        screenshot: `<img width="20" height="20" src="icons/screenshot.svg">`,
+        lock: `<img width="16" height="16" src="icons/lock1.svg">`,
+        unlock: `<img width="16" height="16" src="icons/unlock1.svg">`,
+        setting: '<img width="20" height="20" src="icons/setting1.svg">',
+    },
+    controls: [
+        {
+            position: 'right',
+            html: '<img width="24" height="24" src="icons/rewind.png">',
+            tooltip: 'Rewind 10s',
+            click: function () {
+                art.seek = art.currentTime - 10;
+            },
+        },
+        {
+            position: 'right',
+            html: '<img width="24" height="24" src="icons/forward.png">',
+            tooltip: 'Forward 10s',
+            click: function () {
+                art.seek = art.currentTime + 10;
+            },
+        },
+    ],
+});
+    
+const skipIntroLayer = art.layers.add({
+            html: '<img width="20" height="20" src="icons/skip-fast.svg"> Skip Intro',
+            style: {
+                position: 'absolute',
+                border: '1px solid #fff',
+                top: '5px', 
+                right: '5px', 
+                background: '#000', 
+                color: '#fff', 
+                padding: '4px 8px', 
+                borderRadius: '3px', 
+                cursor: 'pointer',
+                display: 'none',
+                fontSize: '1rem' // Initially hidden
+            },
+            click: function() {
+                art.currentTime = 180; // Skip to the end of the intro
+            }
+        });
+
+        const skipOutroLayer = art.layers.add({
+            html: '<img width="20" height="20" src="icons/skip-fast.svg"> Skip Outro',
+            style: {
+                position: 'absolute',
+                border: '1px solid #fff',
+                top: '5px', 
+                right: '5px', 
+                background: '#000', 
+                color: '#fff', 
+                padding: '4px 8px', 
+                borderRadius: '3px', 
+                cursor: 'pointer',
+                display: 'none',
+                fontSize: '1rem' 
+            },
+            click: function() {
+                art.currentTime = 1400; 
+            }
+        }); 
+art.on('video:timeupdate', () => {
+            const currentTime = art.currentTime;
+            if (currentTime >= 40 && currentTime < 180) {
+                skipIntroLayer.style.display = 'block';
+                skipOutroLayer.style.display = 'none';
+                if (settings.autoSkipIntro) art.currentTime = 180;
+            } else if (currentTime >= 1337 && currentTime < 1400) {
+                skipIntroLayer.style.display = 'none';
+                skipOutroLayer.style.display = 'block';
+                if (settings.autoSkipOutro) art.currentTime = 1400;
+            } else {
+                skipIntroLayer.style.display = 'none';
+                skipOutroLayer.style.display = 'none';
+            }
+        });
+
+        art.on('dblclick', (event) => {
+            const clickX = event.clientX;
+            const halfWidth = art.template.$player.getBoundingClientRect().width / 2;
+            art.currentTime += (clickX > halfWidth) ? 10 : -10;
+        });
+
+        art.on('ready', () => {
+            const autoSkipEnabled = localStorage.getItem('autoSkipEnabled');
+            settings.autoSkipIntro = settings.autoSkipOutro = autoSkipEnabled === 'true';
+        });
+
+        art.on('artplayerPluginAds:click', (ads) => console.info('Ad clicked', ads));
+        art.on('artplayerPluginAds:skip', (ads) => console.info('Ad skipped', ads));
+    
+document.querySelector('.artplayer-app').addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+}, false); 
+    
+art.on('ready', () => {
+    console.info('Artplayer is ready');
+    art.notice.show = 'Thanks for waiting';
+});
+</script>
+
+</body>
+</html>
